@@ -150,11 +150,13 @@ export async function POST(request: Request) {
 
     Each day should include three meals: "Breakfast", "Lunch", and "Dinner". Each meal should have a name, a list of ingredients, and preparation instructions (either as a single string or an array of steps). Ensure the response is in valid JSON format, without additional commentary. DO NOT format the JSON in markdown.`;
 
+    console.log("Sending request to OpenAI...");
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
     });
 
+    console.log("Received response from OpenAI");
     const mealPlanContent = completion.choices[0].message.content;
     if (!mealPlanContent) {
       throw new Error("No content received from OpenAI");
@@ -165,6 +167,7 @@ export async function POST(request: Request) {
       mealPlanData = JSON.parse(mealPlanContent);
     } catch (error) {
       console.error("Failed to parse OpenAI response:", error);
+      console.log("Raw OpenAI response:", mealPlanContent);
       return NextResponse.json(
         { error: "Failed to generate meal plan. Please try again." },
         { status: 500 }
@@ -194,7 +197,10 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error generating meal plan:", error);
     return NextResponse.json(
-      { error: "Failed to generate meal plan. Please try again." },
+      {
+        error: "Failed to generate meal plan. Please try again.",
+        details: (error as Error).message,
+      },
       { status: 500 }
     );
   }

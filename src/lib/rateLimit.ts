@@ -1,36 +1,27 @@
 import { NextResponse } from "next/server";
 
-interface RateLimitStore {
-  [key: string]: {
-    count: number;
-    resetTime: number;
-  };
-}
+const WINDOW_SIZE = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 5; // 5 requests per minute
 
-const store: RateLimitStore = {};
+let lastResetTime = Date.now();
+let requestCount = 0;
 
 export async function rateLimit(ip: string) {
   const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const max = 5; // Max requests per windowMs
 
-  if (!store[ip]) {
-    store[ip] = {
-      count: 0,
-      resetTime: now + windowMs,
-    };
+  if (now - lastResetTime > WINDOW_SIZE) {
+    lastResetTime = now;
+    requestCount = 0;
   }
 
-  if (now > store[ip].resetTime) {
-    store[ip] = {
-      count: 0,
-      resetTime: now + windowMs,
-    };
-  }
+  requestCount++;
 
-  store[ip].count++;
+  console.log(
+    `Rate limit: ${requestCount}/${MAX_REQUESTS} requests in the last minute`
+  );
 
-  if (store[ip].count > max) {
+  if (requestCount > MAX_REQUESTS) {
+    console.log(`Rate limit exceeded`);
     return NextResponse.json(
       { error: "Too many requests, please try again later." },
       { status: 429 }
