@@ -10,7 +10,7 @@ const openai = new OpenAI({
 interface Meal {
   name: string;
   ingredients: string[];
-  instructions: string[];
+  instructions: string | string[];
 }
 
 interface DayPlan {
@@ -30,10 +30,10 @@ function validateMealPlan(data: any): data is MealPlan {
     if (!day.startsWith("Day ")) return false;
     if (typeof dayPlan !== "object" || dayPlan === null) return false;
 
-    const meals = ["Breakfast", "Lunch", "Dinner"];
+    const meals = ["Breakfast", "Lunch", "Dinner"] as const;
     for (const meal of meals) {
       if (!dayPlan.hasOwnProperty(meal)) return false;
-      const mealData = dayPlan[meal];
+      const mealData = (dayPlan as DayPlan)[meal];
       if (typeof mealData !== "object" || mealData === null) return false;
       if (mealData.name && typeof mealData.name !== "string") return false;
       if (mealData.ingredients && !Array.isArray(mealData.ingredients))
