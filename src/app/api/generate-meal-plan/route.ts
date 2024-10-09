@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { rateLimit } from "@/lib/rateLimit";
 import { headers } from "next/headers";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 interface Meal {
   name: string;
@@ -54,6 +49,12 @@ export async function POST(request: Request) {
   if (rateLimitResult) return rateLimitResult;
 
   try {
+    // Dynamically import OpenAI
+    const OpenAI = (await import("openai")).default;
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const formData = await request.formData();
 
     // Server-side validation
