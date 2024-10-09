@@ -44,11 +44,13 @@ function validateMealPlan(data: any): data is MealPlan {
 }
 
 export async function POST(request: Request) {
+  console.time("total-execution");
   const ip = headers().get("x-forwarded-for") ?? "unknown";
   const rateLimitResult = await rateLimit(ip);
   if (rateLimitResult) return rateLimitResult;
 
   try {
+    console.time("openai-request");
     // Dynamically import OpenAI
     const OpenAI = (await import("openai")).default;
     const openai = new OpenAI({
@@ -155,6 +157,7 @@ export async function POST(request: Request) {
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
     });
+    console.timeEnd("openai-request");
 
     console.log("Received response from OpenAI");
     const mealPlanContent = completion.choices[0].message.content;
@@ -203,5 +206,7 @@ export async function POST(request: Request) {
       },
       { status: 500 }
     );
+  } finally {
+    console.timeEnd("total-execution");
   }
 }
