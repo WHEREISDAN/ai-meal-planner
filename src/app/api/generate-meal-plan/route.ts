@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 import { headers } from "next/headers";
 
+// Add this import at the top of the file
+import { NextRequest } from "next/server";
+
 interface Meal {
   name: string;
   ingredients: string[];
@@ -43,7 +46,8 @@ function validateMealPlan(data: any): data is MealPlan {
   return true;
 }
 
-export async function POST(request: Request) {
+// Update the POST function signature and add the config object
+export const POST = async (request: NextRequest) => {
   console.time("total-execution");
   const ip = headers().get("x-forwarded-for") ?? "unknown";
   const rateLimitResult = await rateLimit(ip);
@@ -209,4 +213,8 @@ export async function POST(request: Request) {
   } finally {
     console.timeEnd("total-execution");
   }
-}
+};
+
+export const config = {
+  maxDuration: 60,
+};
