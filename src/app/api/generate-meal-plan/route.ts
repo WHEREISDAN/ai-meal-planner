@@ -33,7 +33,7 @@ function validateMealPlan(data: any): data is MealPlan {
     const meals = ["Breakfast", "Lunch", "Dinner"] as const;
     for (const meal of meals) {
       if (!dayPlan.hasOwnProperty(meal)) return false;
-      const mealData = (dayPlan as Record<string, Meal>)[meal];
+      const mealData = (dayPlan as Record<typeof meal, Meal>)[meal];
       if (typeof mealData !== "object" || mealData === null) return false;
       if (typeof mealData.name !== "string") return false;
       if (!Array.isArray(mealData.ingredients)) return false;
