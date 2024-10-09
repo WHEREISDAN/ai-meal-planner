@@ -21,10 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <Analytics />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
           <ThemeToggle />
+          <Analytics />
         </ThemeProvider>
         <Toaster />
       </body>
