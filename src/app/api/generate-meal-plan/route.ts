@@ -21,6 +21,8 @@ interface MealPlan {
   [key: string]: DayPlan;
 }
 
+export const maxDuration = 60;
+
 function validateMealPlan(data: any): data is MealPlan {
   if (typeof data !== "object" || data === null) return false;
 
@@ -213,8 +215,4 @@ export const POST = async (request: NextRequest) => {
   } finally {
     console.timeEnd("total-execution");
   }
-};
-
-export const config = {
-  maxDuration: 60,
 };
