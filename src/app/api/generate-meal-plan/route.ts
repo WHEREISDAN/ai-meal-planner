@@ -21,7 +21,7 @@ interface MealPlan {
   [key: string]: DayPlan;
 }
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 function validateMealPlan(data: any): data is MealPlan {
   if (typeof data !== "object" || data === null) return false;
